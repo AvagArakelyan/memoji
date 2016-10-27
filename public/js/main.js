@@ -33,7 +33,24 @@
             var draw = SVG('smiley'+i).size(test_w, test_h);
 
             var path = package + '/0' + (i+1) + '-' + emotions[i];
-            var mouthRect = {
+
+              var faceRect = {
+                  left: 0,
+                  top: 0,
+                  width: test_w/fw,
+                  height: test_h/fh
+              };
+
+              draw.image('images/smileys/'+ package +'/face_' + i + '.svg' ,
+                  test_w, test_h)
+                  .move(faceRect.left * test_w, faceRect.top*test_h)
+                  .scale(
+                      faceRect.width > faceRect.height ? faceRect.width/faceRect.height : 1,
+                      faceRect.width > faceRect.height ? 1 : faceRect.height/faceRect.width
+                  );
+
+
+              var mouthRect = {
               left: Math.abs(face.faceLandmarks.mouthLeft.x - face.faceRectangle.left) / fw,
               top: Math.abs(face.faceLandmarks.upperLipTop.y - face.faceRectangle.top) / fh,
               width: Math.abs(face.faceLandmarks.mouthRight.x - face.faceLandmarks.mouthLeft.x) / fw,
