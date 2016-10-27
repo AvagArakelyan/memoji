@@ -4,6 +4,45 @@
     Webcam.attach('#my_camera');
     var popup = document.getElementById('popup');
 
+    var coef = {
+      teen_male: {
+        hb: 1/3,
+        hk: 3/5,
+        wb: 0,
+        wk: 1
+      },
+      teen_female: {
+        hb: 1/3,
+        hk: 3/6,
+        wb: 1/9,
+        wk: 0.7
+      },
+      mid_male: {
+        hb: 1.5/5,
+        hk: 3/5,
+        wb: 0,
+        wk: 1
+      },
+      mid_female: {
+        hb: 0,
+        hk: 1,
+        wb: 0,
+        wk: 1
+      },
+      mature_male: {
+        hb: 0,
+        hk: 1,
+        wb: 0,
+        wk: 1
+      },
+      mature_female: {
+        hb: 0,
+        hk: 1,
+        wb: 0,
+        wk: 1
+      }
+    };
+
     $('#snapshot_btn').on('click', function () {
       Webcam.snap(function (data_uri) {
         document.getElementById('my_result').innerHTML = '';
@@ -21,36 +60,32 @@
           var fh = face.faceRectangle.height;
 
           var age = face.faceAttributes.age > 60 ? 'mature' :
-            face.faceAttributes.age > 18 ? 'teen' :
+            face.faceAttributes.age > 18 ? 'mid' :
             face.faceAttributes.age > 5 ? 'teen' :
               'mid';
 
-          var package = age + '_' + face.faceAttributes.gender;
+          var category = age + '_' + 'female';//face.faceAttributes.gender;
             var emotions = ['Normal', 'Happy', 'Angry', 'Surprised', 'Hug', 'Sad'];
 
           for (var i=0; i !== 6; ++i) {
             $('<div id="smiley' +i +'" class="memojy-block">').appendTo('#smiley-container');
             var draw = SVG('smiley'+i).size(test_w, test_h);
 
-            var path = package + '/0' + (i+1) + '-' + emotions[i];
+            var path = category + '/0' + (i+1) + '-' + emotions[i];
 
-              var faceRect = {
-                  left: 0,
-                  top: 0,
-                  width: test_w/fw,
-                  height: test_h/fh
-              };
+            var faceRect = {
+                left: 0,
+                top: 0,
+                width: test_w / fw,
+                height: test_h / fh
+            };
 
-              draw.image('images/smileys/'+ package +'/face_' + i + '.svg' ,
-                  test_w, test_h)
-                  .move(faceRect.left * test_w, faceRect.top*test_h)
-                  .scale(
-                      faceRect.width > faceRect.height ? faceRect.width/faceRect.height : 1,
-                      faceRect.width > faceRect.height ? 1 : faceRect.height/faceRect.width
-                  );
+            draw.image('images/smileys/'+ path +'/face.svg' ,
+                test_w, test_h)
+                .move(faceRect.left * test_w, faceRect.top*test_h)
+                .scale(1,1);
 
-
-              var mouthRect = {
+            var mouthRect = {
               left: Math.abs(face.faceLandmarks.mouthLeft.x - face.faceRectangle.left) / fw,
               top: Math.abs(face.faceLandmarks.upperLipTop.y - face.faceRectangle.top) / fh,
               width: Math.abs(face.faceLandmarks.mouthRight.x - face.faceLandmarks.mouthLeft.x) / fw,
@@ -60,7 +95,7 @@
             //draw.rect(mouthRect.width*test_w, mouthRect.height*test_h).attr({ fill: 'red' })
             //  .move(mouthRect.left*test_w, mouthRect.top*test_h);
 
-            drawBodyPart(draw, 'images/smileys/'+ path + '/mouth.svg', mouthRect, test_w, test_h );
+            drawBodyPart(category, draw, 'images/smileys/'+ path + '/mouth.svg', mouthRect, test_w, test_h );
             var leftEyeRect = {
               left: Math.abs(face.faceLandmarks.eyeLeftOuter.x - face.faceRectangle.left) / fw,
               top: Math.abs(face.faceLandmarks.eyeLeftTop.y - face.faceRectangle.top) / fh,
@@ -72,7 +107,7 @@
             //  .fill('#ff0')
             //  .move(leftEyeRect.left*test_w, leftEyeRect.top*test_h);
 
-            drawBodyPart(draw, 'images/smileys/'+ path +'/left-eye.svg', leftEyeRect, test_w, test_h, true );
+            drawBodyPart(category, draw, 'images/smileys/'+ path +'/left-eye.svg', leftEyeRect, test_w, test_h, true );
 
             var rightEyeRect = {
               left: Math.abs(face.faceLandmarks.eyeRightInner.x - face.faceRectangle.left) / fw,
@@ -83,7 +118,7 @@
             //draw.rect(rightEyeRect.width*test_w, rightEyeRect.height*test_h).attr({ fill: 'white' })
             //  .move(rightEyeRect.left*test_w, rightEyeRect.top*test_h);
 
-            drawBodyPart(draw, 'images/smileys/' + path + '/right-eye.svg', rightEyeRect, test_w, test_h, true );
+            drawBodyPart(category, draw, 'images/smileys/' + path + '/right-eye.svg', rightEyeRect, test_w, test_h, true );
 
             var noseRect = {
               left: (Math.abs(face.faceLandmarks.noseTip.x - face.faceRectangle.left) - 0.1*fw) / fw,
@@ -94,7 +129,7 @@
             //draw.rect(noseRect.width*test_w, noseRect.height*test_h).attr({ fill: 'brown' })
             //  .move(noseRect.left*test_w, noseRect.top*test_h);
 
-            drawBodyPart(draw, 'images/smileys/' + path + '/nose.svg', noseRect, test_w, test_h );
+            drawBodyPart(category, draw, 'images/smileys/' + path + '/nose.svg', noseRect, test_w, test_h );
           }
 
           //svg.find('#Mouth').attr('transform', 'matrix(' + getPositionMatrix('#Mouth', mouthRect).join(',') + ')');
@@ -102,9 +137,12 @@
           //svg.find('#Right_Eye').attr('transform', 'matrix(' + getPositionMatrix('#Right_Eye', rightEyeRect).join(',') + ')');
           //
 
-          function drawBodyPart (draw, url, rect, container_w , container_h, dont_stretch) {
+          function drawBodyPart (category, draw, url, rect, container_w , container_h, dont_stretch) {
             draw.image(url , rect.width*container_w, rect.height*container_h)
-              .move(rect.left * container_w, rect.top*container_h)
+              .move(
+                container_w * (coef[category].wb + rect.left * coef[category].wk),
+                container_h * (coef[category].hb + rect.top * coef[category].hk)
+              )
               .scale(
                 !dont_stretch ? 1 : rect.width > rect.height ? rect.width/rect.height : 1,
                 !dont_stretch ? 1 : rect.width > rect.height ? 1 : rect.height/rect.width
