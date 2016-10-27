@@ -12,35 +12,38 @@
 
         requestFaceMeta(data_uri)
           .then(function (data) {
-            $('#sm').empty();
-
+            $('#smiley-container').empty();
           var test_w = 320;
           var test_h = 370;
-          var draw = SVG('sm').size(test_w, test_h);
 
           var face = data[0];
           var fw = face.faceRectangle.width;
           var fh = face.faceRectangle.height;
 
           var age = face.faceAttributes.age > 60 ? 'mature' :
-            face.faceAttributes.age > 18 ? 'mid' :
+            face.faceAttributes.age > 18 ? 'teen' :
             face.faceAttributes.age > 5 ? 'teen' :
               'mid';
 
           var package = age + '_' + face.faceAttributes.gender;
+            var emotions = ['Normal', 'Happy', 'Angry', 'Surprised', 'Hug', 'Sad'];
 
-          for (var i=0; i !== 1; ++i) {
+          for (var i=0; i !== 6; ++i) {
+            $('<div id="smiley' +i +'" class="memojy-block">').appendTo('#smiley-container');
+            var draw = SVG('smiley'+i).size(test_w, test_h);
+
+            var path = package + '/0' + (i+1) + '-' + emotions[i];
             var mouthRect = {
               left: Math.abs(face.faceLandmarks.mouthLeft.x - face.faceRectangle.left) / fw,
               top: Math.abs(face.faceLandmarks.upperLipTop.y - face.faceRectangle.top) / fh,
               width: Math.abs(face.faceLandmarks.mouthRight.x - face.faceLandmarks.mouthLeft.x) / fw,
               height: Math.abs(face.faceLandmarks.upperLipTop.y - face.faceLandmarks.underLipBottom.y) / fh
             };
-            drawBodyPart(draw, 'images/smileys/'+ package +'/mouth_' + i + '.svg', mouthRect, test_w, test_h );
 
             //draw.rect(mouthRect.width*test_w, mouthRect.height*test_h).attr({ fill: 'red' })
             //  .move(mouthRect.left*test_w, mouthRect.top*test_h);
 
+            drawBodyPart(draw, 'images/smileys/'+ path + '/mouth.svg', mouthRect, test_w, test_h );
             var leftEyeRect = {
               left: Math.abs(face.faceLandmarks.eyeLeftOuter.x - face.faceRectangle.left) / fw,
               top: Math.abs(face.faceLandmarks.eyeLeftTop.y - face.faceRectangle.top) / fh,
@@ -52,7 +55,7 @@
             //  .fill('#ff0')
             //  .move(leftEyeRect.left*test_w, leftEyeRect.top*test_h);
 
-            drawBodyPart(draw, 'images/smileys/'+ package +'/left_eye_' + i + '.svg', leftEyeRect, test_w, test_h );
+            drawBodyPart(draw, 'images/smileys/'+ path +'/left-eye.svg', leftEyeRect, test_w, test_h, true );
 
             var rightEyeRect = {
               left: Math.abs(face.faceLandmarks.eyeRightInner.x - face.faceRectangle.left) / fw,
@@ -63,7 +66,7 @@
             //draw.rect(rightEyeRect.width*test_w, rightEyeRect.height*test_h).attr({ fill: 'white' })
             //  .move(rightEyeRect.left*test_w, rightEyeRect.top*test_h);
 
-            drawBodyPart(draw, 'images/smileys/' + package + '/right_eye_' + i + '.svg', rightEyeRect, test_w, test_h );
+            drawBodyPart(draw, 'images/smileys/' + path + '/right-eye.svg', rightEyeRect, test_w, test_h, true );
 
             var noseRect = {
               left: (Math.abs(face.faceLandmarks.noseTip.x - face.faceRectangle.left) - 0.1*fw) / fw,
@@ -74,23 +77,20 @@
             //draw.rect(noseRect.width*test_w, noseRect.height*test_h).attr({ fill: 'brown' })
             //  .move(noseRect.left*test_w, noseRect.top*test_h);
 
-            drawBodyPart(draw, 'images/smileys/' + package + '/nose_' + i + '.svg', noseRect, test_w, test_h );
+            drawBodyPart(draw, 'images/smileys/' + path + '/nose.svg', noseRect, test_w, test_h );
           }
-
-
-
 
           //svg.find('#Mouth').attr('transform', 'matrix(' + getPositionMatrix('#Mouth', mouthRect).join(',') + ')');
           //svg.find('#Left_Eye').attr('transform', 'matrix(' + getPositionMatrix('#Left_Eye', leftEyeRect).join(',') + ')');
           //svg.find('#Right_Eye').attr('transform', 'matrix(' + getPositionMatrix('#Right_Eye', rightEyeRect).join(',') + ')');
           //
 
-          function drawBodyPart (draw, url, rect, container_w , container_h) {
+          function drawBodyPart (draw, url, rect, container_w , container_h, dont_stretch) {
             draw.image(url , rect.width*container_w, rect.height*container_h)
               .move(rect.left * container_w, rect.top*container_h)
               .scale(
-              rect.width > rect.height ? rect.width/rect.height : 1,
-              rect.width > rect.height ? 1 : rect.height/rect.width
+                !dont_stretch ? 1 : rect.width > rect.height ? rect.width/rect.height : 1,
+                !dont_stretch ? 1 : rect.width > rect.height ? 1 : rect.height/rect.width
             );
           }
         });
@@ -130,14 +130,14 @@
     });
   });
 
-  var svg = $('#smiley svg');
-  var svgRect = svg[0].getBoundingClientRect();
+  //var svg = $('#smiley svg');
+  //var svgRect = svg[0].getBoundingClientRect();
 
-  var initPositions = {
-    '#Mouth': normalizePoint($('#Mouth')[0].getBoundingClientRect(), svgRect),
-    '#Left_Eye': normalizePoint($('#Left_Eye')[0].getBoundingClientRect(), svgRect),
-    '#Right_Eye': normalizePoint($('#Right_Eye')[0].getBoundingClientRect(), svgRect)
-  };
+  //var initPositions = {
+  //  '#Mouth': normalizePoint($('#Mouth')[0].getBoundingClientRect(), svgRect),
+  //  '#Left_Eye': normalizePoint($('#Left_Eye')[0].getBoundingClientRect(), svgRect),
+  //  '#Right_Eye': normalizePoint($('#Right_Eye')[0].getBoundingClientRect(), svgRect)
+  //};
 
   function getPositionMatrix ( svgElementSelector, partRectangle ) {
     var viewBox = svg.attr('viewBox').split(' ').map(Number);
