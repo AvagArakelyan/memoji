@@ -1,4 +1,4 @@
-(function (exports, $, Face, Webcam) {
+(function (exports, $, Face, Webcam, SVG) {
 
   $(document).ready(function () {
     Webcam.attach('#my_camera');
@@ -12,28 +12,53 @@
 
         requestFaceMeta(data_uri).then(function (data) {
           console.log('data=', data);
+          $('#sm').empty();
+
+          var test_w = 320;
+          var test_h = 240;
+          var draw = SVG('sm').size(test_w, test_h);
 
           var face = data[0];
           var fw = face.faceRectangle.width;
           var fh = face.faceRectangle.height;
           var mouthRect = {
             left: Math.abs(face.faceLandmarks.mouthLeft.x - face.faceRectangle.left) / fw,
-            top: (Math.abs(face.faceLandmarks.mouthLeft.y - face.faceRectangle.top) - face.faceRectangle.height / 16) / fh,
+            top: Math.abs(face.faceLandmarks.upperLipTop.y - face.faceRectangle.top) / fh,
             width: Math.abs(face.faceLandmarks.mouthRight.x - face.faceLandmarks.mouthLeft.x) / fw,
-            height: face.faceRectangle.height / 8 / fh
+            height: Math.abs(face.faceLandmarks.upperLipTop.y - face.faceLandmarks.underLipBottom.y) / fh
           };
+          draw.rect(mouthRect.width*test_w, mouthRect.height*test_h).attr({ fill: 'red' })
+            .move(mouthRect.left*test_w, mouthRect.top*test_h);
 
-
-          var leftEye = {
+          var leftEyeRect = {
             left: Math.abs(face.faceLandmarks.eyeLeftOuter.x - face.faceRectangle.left) / fw,
             top: Math.abs(face.faceLandmarks.eyeLeftTop.y - face.faceRectangle.top) / fh,
             width: Math.abs(face.faceLandmarks.eyeLeftOuter.x - face.faceLandmarks.eyeLeftInner.x) / fw,
             height: Math.abs(face.faceLandmarks.eyeLeftBottom.y - face.faceLandmarks.eyeLeftTop.y) / fh
           };
+          draw.rect(leftEyeRect.width*test_w, leftEyeRect.height*test_h).attr({ fill: 'white' })
+            .move(leftEyeRect.left*test_w, leftEyeRect.top*test_h);
 
-          console.log('leftEye=', leftEye);
+          var rightEyeRect = {
+            left: Math.abs(face.faceLandmarks.eyeRightInner.x - face.faceRectangle.left) / fw,
+            top: Math.abs(face.faceLandmarks.eyeRightTop.y - face.faceRectangle.top) / fh,
+            width: Math.abs(face.faceLandmarks.eyeRightOuter.x - face.faceLandmarks.eyeRightInner.x) / fw,
+            height: Math.abs(face.faceLandmarks.eyeRightBottom.y - face.faceLandmarks.eyeRightTop.y) / fh
+          };
+          draw.rect(rightEyeRect.width*test_w, rightEyeRect.height*test_h).attr({ fill: 'white' })
+            .move(rightEyeRect.left*test_w, rightEyeRect.top*test_h);
+
+          var noseRect = {
+            left: (Math.abs(face.faceLandmarks.noseTip.x - face.faceRectangle.left) - 0.1*fw) / fw,
+            top: Math.abs(face.faceLandmarks.noseTip.y - face.faceRectangle.top) / fh,
+            width: 0.2,
+            height: 0.1
+          };
+          draw.rect(noseRect.width*test_w, noseRect.height*test_h).attr({ fill: 'brown' })
+            .move(noseRect.left*test_w, noseRect.top*test_h);
+
           svg.find('#Mouth').attr('transform', 'matrix(' + getPositionMatrix('#Mouth', mouthRect).join(',') + ')');
-          svg.find('#Left_Eye').attr('transform', 'matrix(' + getPositionMatrix('#Left_Eye', leftEye).join(',') + ')');
+          svg.find('#Left_Eye').attr('transform', 'matrix(' + getPositionMatrix('#Left_Eye', leftEyeRect).join(',') + ')');
         });
       });
     });
@@ -83,22 +108,22 @@
     var svgRect = svg[0].getBoundingClientRect();
     var elRect = initPositions[svgElementSelector]; //normalizePoint($el[0].getBoundingClientRect(), svgRect);
 
-    //var svg_w = 237;
-    //var svg_h = 270.8;
+    var svg_w = 237;
+    var svg_h = 270.8;
 
-    var scaleX = (partRectangle.width * svgRect.width) / elRect.width;
-    var scaleY = (partRectangle.height * svgRect.height) / elRect.height;
+    var scaleX = (partRectangle.width * svgRect.width) / elRect.width; // * (svgRect.width / svg_w);
+    var scaleY = (partRectangle.height * svgRect.height) / elRect.height; // * (svgRect.height / svg_h);
     var moveX = elRect.left - partRectangle.left * svgRect.width;
     var moveY = elRect.top - partRectangle.top * svgRect.height;
 
     console.log('scales=',[scaleX, scaleY])
     var result = [
-      scaleX,
+      1, //scaleX,
       0,
       0,
-      scaleY,
-      moveX * (1 - scaleX),
-      moveY * (1 - scaleY)
+      1, //scaleY,
+      moveX,// * (1 - scaleX),
+      moveY// * (1 - scaleY)
     ];
     return result;
   }
@@ -139,4 +164,4 @@
       processData: false
     });
   }
-})(this, jQuery, Face, Webcam);
+})(this, jQuery, Face, Webcam, SVG);
