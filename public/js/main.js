@@ -30,8 +30,8 @@
         wk: 1
       },
       mature_male: {
-        hb: 0,
-        hk: 1,
+        hb: 1/5,
+        hk: 4/5,
         wb: 0,
         wk: 1
       },
@@ -64,7 +64,7 @@
             face.faceAttributes.age > 5 ? 'teen' :
               'mid';
 
-          var category = age + '_' + 'female';//face.faceAttributes.gender;
+          var category = age + '_' + face.faceAttributes.gender;
             var emotions = ['Normal', 'Happy', 'Angry', 'Surprised', 'Hug', 'Sad'];
 
           for (var i=0; i !== 6; ++i) {
