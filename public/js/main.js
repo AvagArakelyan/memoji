@@ -21,13 +21,12 @@
     var ext = format.split('/')[1];
     var binary = atob(data[2]);
 
-    //var imageData = new Uint8Array(binary.length);
-    //for (var i = 0; i < binary.length; i++) {
-    //  imageData[i] = binary.charCodeAt(i);
-    //}
+    var imageData = new Uint8Array(binary.length);
+    for (var i = 0; i < binary.length; i++) {
+      imageData[i] = binary.charCodeAt(i);
+    }
 
     var params = {
-      // Request parameters
       'returnFaceId': 'true',
       'returnFaceLandmarks': 'false',
       'returnFaceAttributes': 'gender,age'
@@ -35,13 +34,12 @@
     return $.ajax({
       url: 'https://api.projectoxford.ai/face/v1.0/detect?' + $.param(params),
       beforeSend: function(xhrObj){
-        // Request headers
         xhrObj.setRequestHeader('Content-Type','application/octet-stream');
         xhrObj.setRequestHeader('Ocp-Apim-Subscription-Key','c557e467c8954049aa3156f874d3b694');
       },
       type: 'POST',
-      // Request body
-      data: binary //new Blob([imageData], {type: format}) //binary
+      data: imageData,
+      processData: false
     });
   }
 
