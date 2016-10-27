@@ -1,10 +1,28 @@
 <% include header %>
 
-<div id="my_camera" style="width:320px; height:240px;"></div>
-<div id="my_result"></div>
+<h1>CREATE MEMOJIES </h1>
 
-<a id="snapshot_btn" href="javascript:void(0)">Take Snapshot</a>
+<section class="clearfix">
+  <div class="camera-holder">
+    <div id="my_camera" style="width: 320px; height: 240px;"></div>
+    <a id="snapshot_btn" class="btn" href="javascript:void(0)">Take Snapshot</a>
 
-<br/>
-<input id="upload_photo" type="file" accept="image/*" />
+    <div class="middle">OR</div>
+    <div class="upload-container">
+      <label for="upload_photo" class="btn">Upload Photo</label>
+      <input id="upload_photo" type="file" accept="image/*" />
+    </div>
+
+  </div>
+  <div class="memojy-block">
+
+
+  </div>
+</section>
+<div id="popup"  class="hidden">
+  <div id="my_result">
+
+  </div>
+  <i class="close">x</i>
+</div>
 <% include footer %>
