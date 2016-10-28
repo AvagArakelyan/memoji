@@ -1,6 +1,7 @@
 body {
   padding: 15px 50px 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  color: #9b9b9b;
+  font: 14px  Helvetica, "Lucida Grande", Arial, sans-serif;
 }
 * {
   box-sizing: border-box;
@@ -14,54 +15,71 @@ body {
   display: none;
   visibility: hidden;
 }
-h1 {
+h1, h2 {
   text-align: center;
+  color: #9b9b9b;
+}
+h1{
+  text-indent: -99999999px;
+  line-height: 1;
+  margin: 0;
+  font-size: 1px;
+}
+.logo {
+  display: block;
+  text-align: center;
+}
+h2{
+  font-size: 14px;
+  line-height: 16px;
 }
 a {
   text-decoration: none;
 }
-
 .camera-holder {
-  width: 320px;
-  float: left;
+  width: 370px;
+  margin: 0 auto;
+
 }
 #my_camera {
   position: relative;
+  box-shadow: 0px 15px 20px rgba(0,0,0,.2);
+  border-radius: 10px;
+  background-color: #fff;
+  z-index: 1;
   &:after {
     content: '';
     display: block;
-    background: url('../images/camera.png') no-repeat 50% 50%;
-    background-size: cover;
-    z-index: 1;
+    background:url('/images/camera.png') no-repeat 50% 50%;
     position: absolute;
-    top: -5px;
-    bottom: -5px;
-    right: -10px;
-    left: -10px;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    z-index: 5;
   }
 }
 
 .memojy-block {
   margin-left: 20px;
-  width: 320px;
-  float: left;
-  //background: #4F4D3F;
 }
 #smiley-container {
   width: 100%;
   float: left;
 }
 .btn {
-  border: none;
-  background: #00B7FF;
-  width: 100%;
-  padding: 10px 20px;
   display: block;
-  margin: 15px 0;
+  margin: 12px auto;
+  border: 3px solid #00C4F5;
+  border-radius: 100px;
+  background: #5DDDFD;
+  line-height: 44px;
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+  width: 180px;
   text-align: center;
-  font-size: 36px;
-  color: #FFF;
-  cursor: pointer;
+  padding: 0 12px;
 }
 #popup {
   position: fixed;
@@ -69,7 +87,7 @@ a {
   bottom: auto;
   margin-left: -160px;
   left: 50%;
-  width: 350px;
+  width: 370px;
   height: auto;
   background: #dcdcdc;
   z-index: 5;
@@ -83,30 +101,27 @@ a {
     }
   }
   .close {
-    position: absolute;
-    top: 6px;
-    right: 6px;
-    width: 20px;
-    height: 20px;
-    font-style: normal;
-    font-size: 14px;
-    border-radius: 50%;
-    border: 1px solid;
-    text-align: center;
-    cursor: pointer;
+    line-height: 22px;
+    font-size: 20px;
+    color: #4A4A4A;
   }
 }
 #upload_photo {
   display: none;
 }
-label[for=upload_photo] {
-  background-color: #d630c0;
+label[for=upload_photo]{
+    color: #76d04b;
 }
+label[for=upload_photo],
 .middle {
   text-align: center;
+  display: block;
   clear: both;
-  font-size: 30px;
-  color: #663399;
+  font-size: 16px;
+  line-height: 24px;
+}
+.copyright {
+  text-align: center;
 }
 
 

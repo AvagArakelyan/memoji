@@ -87,7 +87,7 @@
           requestFaceMeta(data_uri)
               .then(function (data) {
                   $('#smiley-container').empty();
-                  var test_w = 320;
+                  var test_w = 370;
                   var test_h = 370;
 
                   var face = data[0];

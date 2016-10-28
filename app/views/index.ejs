@@ -1,29 +1,30 @@
 <% include header %>
 
-<h1>CREATE MEMOJIES </h1>
-
+<h1>Memoji</h1>
+<h2>Welcome to Memoji website! Let's create emojies like you.</h2>
 <section class="clearfix">
   <div class="camera-holder">
-    <div id="my_camera" style="width: 320px; height: 240px;"></div>
-    <a id="snapshot_btn" class="btn" href="javascript:void(0)">Take Snapshot</a>
+    <div class="visiable">
+      <div id="my_camera" style="width: 370px; height: 300px;"></div>
+      <a id="snapshot_btn" class="btn" href="javascript:void(0)">Take Snapshot</a>
 
-    <div class="middle">OR</div>
-    <div class="upload-container">
-      <label for="upload_photo" class="btn">Upload Photo</label>
-      <input id="upload_photo" type="file" accept="image/*" />
+      <div class="middle">or</div>
+      <div class="upload-container">
+        <label for="upload_photo">upload image</label>
+        <input id="upload_photo" type="file" accept="image/*" />
+      </div>
     </div>
-
+    <div id="popup"  class="hidden">
+      <div id="my_result"></div>
+      <i class="close"></i>
+    </div>
   </div>
   <div id="sm" class="memojy-block">
-     <canvas id="canvas" width="150" height="150">
-
-     </canvas>
+    <canvas id="canvas" width="150" height="150">
+    </canvas>
   </div>
 </section>
 <div id="smiley-container">
 </div>
-<div id="popup"  class="hidden">
-  <div id="my_result"></div>
-  <i class="close">x</i>
-</div>
+
 <% include footer %>
