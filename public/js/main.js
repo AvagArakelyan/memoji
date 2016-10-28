@@ -49,108 +49,7 @@
         document.getElementById('my_result').innerHTML = '<img src="' + data_uri + '"/>';
         popup.classList.remove('hidden');
 
-        requestFaceMeta(data_uri)
-          .then(function (data) {
-            $('#smiley-container').empty();
-            var test_w = 320;
-            var test_h = 370;
-
-            var face = data[0];
-            if (!face) {
-              alert('No face detected');
-              return;
-            }
-
-            var fw = face.faceRectangle.width;
-            var fh = face.faceRectangle.height;
-
-            var age = face.faceAttributes.age > 60 ? 'mature' :
-              face.faceAttributes.age > 18 ? 'mid' :
-              face.faceAttributes.age > 5 ? 'teen' :
-                'mid';
-
-            var category = age + '_' + face.faceAttributes.gender;
-            var emotions = ['Normal', 'Happy', 'Angry', 'Surprised', 'Hug', 'Sad'];
-
-            for (var i=0; i !== 6; ++i) {
-              $('<div id="smiley' +i +'" class="memojy-block">').appendTo('#smiley-container');
-              var draw = SVG('smiley'+i).size(test_w, test_h);
-
-              var path = category + '/0' + (i+1) + '-' + emotions[i];
-
-              var faceRect = {
-                  left: 0,
-                  top: 0,
-                  width: test_w / fw,
-                  height: test_h / fh
-              };
-
-              draw.image('images/smileys/'+ path +'/face.svg' ,
-                  test_w, test_h)
-                  .move(faceRect.left * test_w, faceRect.top*test_h)
-                  .scale(1,1);
-
-              var mouthRect = {
-                left: Math.abs(face.faceLandmarks.mouthLeft.x - face.faceRectangle.left) / fw,
-                top: Math.abs(face.faceLandmarks.upperLipTop.y - face.faceRectangle.top) / fh,
-                width: Math.abs(face.faceLandmarks.mouthRight.x - face.faceLandmarks.mouthLeft.x) / fw,
-                height: Math.abs(face.faceLandmarks.upperLipTop.y - face.faceLandmarks.underLipBottom.y) / fh
-              };
-
-              //draw.rect(mouthRect.width*test_w, mouthRect.height*test_h).attr({ fill: 'red' })
-              //  .move(mouthRect.left*test_w, mouthRect.top*test_h);
-
-              drawBodyPart(category, draw, 'images/smileys/'+ path + '/mouth.svg', mouthRect, test_w, test_h );
-              var leftEyeRect = {
-                left: Math.abs(face.faceLandmarks.eyeLeftOuter.x - face.faceRectangle.left) / fw,
-                top: Math.abs(face.faceLandmarks.eyeLeftTop.y - face.faceRectangle.top) / fh,
-                width: Math.abs(face.faceLandmarks.eyeLeftOuter.x - face.faceLandmarks.eyeLeftInner.x) / fw,
-                height: Math.abs(face.faceLandmarks.eyeLeftBottom.y - face.faceLandmarks.eyeLeftTop.y) / fh
-              };
-
-              //draw.rect(leftEyeRect.width*test_w, leftEyeRect.height*test_h)
-              //  .fill('#ff0')
-              //  .move(leftEyeRect.left*test_w, leftEyeRect.top*test_h);
-
-              drawBodyPart(category, draw, 'images/smileys/'+ path +'/left-eye.svg', leftEyeRect, test_w, test_h, true );
-
-              var rightEyeRect = {
-                left: Math.abs(face.faceLandmarks.eyeRightInner.x - face.faceRectangle.left) / fw,
-                top: Math.abs(face.faceLandmarks.eyeRightTop.y - face.faceRectangle.top) / fh,
-                width: Math.abs(face.faceLandmarks.eyeRightOuter.x - face.faceLandmarks.eyeRightInner.x) / fw,
-                height: Math.abs(face.faceLandmarks.eyeRightBottom.y - face.faceLandmarks.eyeRightTop.y) / fh
-              };
-              //draw.rect(rightEyeRect.width*test_w, rightEyeRect.height*test_h).attr({ fill: 'white' })
-              //  .move(rightEyeRect.left*test_w, rightEyeRect.top*test_h);
-
-              drawBodyPart(category, draw, 'images/smileys/' + path + '/right-eye.svg', rightEyeRect, test_w, test_h, true );
-
-              var noseRect = {
-                left: (Math.abs(face.faceLandmarks.noseTip.x - face.faceRectangle.left) - 0.1*fw) / fw,
-                top: Math.abs(face.faceLandmarks.noseTip.y - face.faceRectangle.top) / fh,
-                width: 0.2,
-                height: 0.1
-              };
-              //draw.rect(noseRect.width*test_w, noseRect.height*test_h).attr({ fill: 'brown' })
-              //  .move(noseRect.left*test_w, noseRect.top*test_h);
-
-              if (path.indexOf('mid_female') === -1) {
-                drawBodyPart(category, draw, 'images/smileys/' + path + '/nose.svg', noseRect, test_w, test_h );
-              }
-            }
-
-            function drawBodyPart (category, draw, url, rect, container_w , container_h, dont_stretch) {
-              draw.image(url , rect.width*container_w, rect.height*container_h)
-                .move(
-                  container_w * (coef[category].wb + rect.left * coef[category].wk),
-                  container_h * (coef[category].hb + rect.top * coef[category].hk)
-                )
-                .scale(
-                  !dont_stretch ? 1 : rect.width > rect.height ? rect.width/rect.height : 1,
-                  !dont_stretch ? 1 : rect.width > rect.height ? 1 : rect.height/rect.width
-              );
-            }
-          });
+       generateMemoji(data_uri);
       });
     });
     $('#upload_photo').on('change', function () {
@@ -172,9 +71,7 @@
         reader.onload = (function (aImg) {
           return function (e) {
             aImg.src = e.target.result;
-            requestFaceMeta(aImg.src).then(function (data) {
-              console.log('data=', data);
-            });
+              generateMemoji(data_uri);
           };
         })(img);
         reader.readAsDataURL(file);
@@ -185,6 +82,111 @@
       $('#popup').addClass('hidden');
       $('#my_result').html('');
     });
+
+      function generateMemoji(data_uri){
+          requestFaceMeta(data_uri)
+              .then(function (data) {
+                  $('#smiley-container').empty();
+                  var test_w = 320;
+                  var test_h = 370;
+
+                  var face = data[0];
+                  if (!face) {
+                      alert('No face detected');
+                      return;
+                  }
+
+                  var fw = face.faceRectangle.width;
+                  var fh = face.faceRectangle.height;
+
+                  var age = face.faceAttributes.age > 60 ? 'mature' :
+                      face.faceAttributes.age > 18 ? 'mid' :
+                          face.faceAttributes.age > 5 ? 'teen' :
+                              'mid';
+
+                  var category = age + '_' + face.faceAttributes.gender;
+                  var emotions = ['Normal', 'Happy', 'Angry', 'Surprised', 'Hug', 'Sad'];
+
+                  for (var i=0; i !== 6; ++i) {
+                      $('<div id="smiley' +i +'" class="memojy-block">').appendTo('#smiley-container');
+                      var draw = SVG('smiley'+i).size(test_w, test_h);
+
+                      var path = category + '/0' + (i+1) + '-' + emotions[i];
+
+                      var faceRect = {
+                          left: 0,
+                          top: 0,
+                          width: test_w / fw,
+                          height: test_h / fh
+                      };
+
+                      draw.image('images/smileys/'+ path +'/face.svg' ,
+                          test_w, test_h)
+                          .move(faceRect.left * test_w, faceRect.top*test_h)
+                          .scale(1,1);
+
+                      var mouthRect = {
+                          left: Math.abs(face.faceLandmarks.mouthLeft.x - face.faceRectangle.left) / fw,
+                          top: Math.abs(face.faceLandmarks.upperLipTop.y - face.faceRectangle.top) / fh,
+                          width: Math.abs(face.faceLandmarks.mouthRight.x - face.faceLandmarks.mouthLeft.x) / fw,
+                          height: Math.abs(face.faceLandmarks.upperLipTop.y - face.faceLandmarks.underLipBottom.y) / fh
+                      };
+
+                      //draw.rect(mouthRect.width*test_w, mouthRect.height*test_h).attr({ fill: 'red' })
+                      //  .move(mouthRect.left*test_w, mouthRect.top*test_h);
+
+                      drawBodyPart(category, draw, 'images/smileys/'+ path + '/mouth.svg', mouthRect, test_w, test_h );
+                      var leftEyeRect = {
+                          left: Math.abs(face.faceLandmarks.eyeLeftOuter.x - face.faceRectangle.left) / fw,
+                          top: Math.abs(face.faceLandmarks.eyeLeftTop.y - face.faceRectangle.top) / fh,
+                          width: Math.abs(face.faceLandmarks.eyeLeftOuter.x - face.faceLandmarks.eyeLeftInner.x) / fw,
+                          height: Math.abs(face.faceLandmarks.eyeLeftBottom.y - face.faceLandmarks.eyeLeftTop.y) / fh
+                      };
+
+                      //draw.rect(leftEyeRect.width*test_w, leftEyeRect.height*test_h)
+                      //  .fill('#ff0')
+                      //  .move(leftEyeRect.left*test_w, leftEyeRect.top*test_h);
+
+                      drawBodyPart(category, draw, 'images/smileys/'+ path +'/left-eye.svg', leftEyeRect, test_w, test_h, true );
+
+                      var rightEyeRect = {
+                          left: Math.abs(face.faceLandmarks.eyeRightInner.x - face.faceRectangle.left) / fw,
+                          top: Math.abs(face.faceLandmarks.eyeRightTop.y - face.faceRectangle.top) / fh,
+                          width: Math.abs(face.faceLandmarks.eyeRightOuter.x - face.faceLandmarks.eyeRightInner.x) / fw,
+                          height: Math.abs(face.faceLandmarks.eyeRightBottom.y - face.faceLandmarks.eyeRightTop.y) / fh
+                      };
+                      //draw.rect(rightEyeRect.width*test_w, rightEyeRect.height*test_h).attr({ fill: 'white' })
+                      //  .move(rightEyeRect.left*test_w, rightEyeRect.top*test_h);
+
+                      drawBodyPart(category, draw, 'images/smileys/' + path + '/right-eye.svg', rightEyeRect, test_w, test_h, true );
+
+                      var noseRect = {
+                          left: (Math.abs(face.faceLandmarks.noseTip.x - face.faceRectangle.left) - 0.1*fw) / fw,
+                          top: Math.abs(face.faceLandmarks.noseTip.y - face.faceRectangle.top) / fh,
+                          width: 0.2,
+                          height: 0.1
+                      };
+                      //draw.rect(noseRect.width*test_w, noseRect.height*test_h).attr({ fill: 'brown' })
+                      //  .move(noseRect.left*test_w, noseRect.top*test_h);
+
+                      if (path.indexOf('mid_female') === -1) {
+                          drawBodyPart(category, draw, 'images/smileys/' + path + '/nose.svg', noseRect, test_w, test_h );
+                      }
+                  }
+
+                  function drawBodyPart (category, draw, url, rect, container_w , container_h, dont_stretch) {
+                      draw.image(url , rect.width*container_w, rect.height*container_h)
+                          .move(
+                              container_w * (coef[category].wb + rect.left * coef[category].wk),
+                              container_h * (coef[category].hb + rect.top * coef[category].hk)
+                          )
+                          .scale(
+                              !dont_stretch ? 1 : rect.width > rect.height ? rect.width/rect.height : 1,
+                              !dont_stretch ? 1 : rect.width > rect.height ? 1 : rect.height/rect.width
+                          );
+                  }
+              });
+      }
   });
 
   function requestFaceMeta(imageUri) {
