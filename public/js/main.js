@@ -139,11 +139,6 @@
               }
             }
 
-            //svg.find('#Mouth').attr('transform', 'matrix(' + getPositionMatrix('#Mouth', mouthRect).join(',') + ')');
-            //svg.find('#Left_Eye').attr('transform', 'matrix(' + getPositionMatrix('#Left_Eye', leftEyeRect).join(',') + ')');
-            //svg.find('#Right_Eye').attr('transform', 'matrix(' + getPositionMatrix('#Right_Eye', rightEyeRect).join(',') + ')');
-            //
-
             function drawBodyPart (category, draw, url, rect, container_w , container_h, dont_stretch) {
               draw.image(url , rect.width*container_w, rect.height*container_h)
                 .move(
@@ -191,89 +186,6 @@
       $('#my_result').html('');
     });
   });
-
-  //var svg = $('#smiley svg');
-  //var svgRect = svg[0].getBoundingClientRect();
-
-  //var initPositions = {
-  //  '#Mouth': normalizePoint($('#Mouth')[0].getBoundingClientRect(), svgRect),
-  //  '#Left_Eye': normalizePoint($('#Left_Eye')[0].getBoundingClientRect(), svgRect),
-  //  '#Right_Eye': normalizePoint($('#Right_Eye')[0].getBoundingClientRect(), svgRect)
-  //};
-
-  function getPositionMatrix ( svgElementSelector, partRectangle ) {
-    var viewBox = svg.attr('viewBox').split(' ').map(Number);
-    viewBox = {
-      left: viewBox[0], top: viewBox[1], width: viewBox[2], height: viewBox[3]
-    };
-    var svgRect = svg[0].getBoundingClientRect();
-    var elRect = initPositions[svgElementSelector]; //normalizePoint($el[0].getBoundingClientRect(), svgRect);
-
-    var scaleX = (partRectangle.width * svgRect.width) / elRect.width;
-    var scaleY = (partRectangle.height * svgRect.height) / elRect.height;
-    var moveX =  -1 * ((elRect.left / svgRect.width) - partRectangle.left) * viewBox.width;
-    var moveY = (partRectangle.top - (elRect.top / svgRect.height)) * viewBox.height;
-
-    var result = [
-      scaleX,
-      0,
-      0,
-      scaleY,
-      moveX + viewBox.width * (1 - scaleX),
-      moveY + viewBox.height * (1 - scaleY)
-    ];
-    return result;
-  }
-
-  var sticker = {
-    mid_female: {
-      left_eye: '',
-      right_eye: '',
-      mouth: '',
-      nose: '',
-      face: ''
-    },
-    mid_male: {
-      left_eye: '',
-      right_eye: '',
-      mouth: '',
-      nose: '',
-      face: ''
-    }
-  };
-
-  //function getPositionMatrix ( svgElementSelector, partRectangle ) {
-  //  var svgRect = svg[0].getBoundingClientRect();
-  //  var elRect = initPositions[svgElementSelector]; //normalizePoint($el[0].getBoundingClientRect(), svgRect);
-  //
-  //  var svg_w = 237;
-  //  var svg_h = 270.8;
-  //
-  //  var scaleX = (partRectangle.width * svgRect.width) / elRect.width; // * (svgRect.width / svg_w);
-  //  var scaleY = (partRectangle.height * svgRect.height) / elRect.height; // * (svgRect.height / svg_h);
-  //  var moveX = elRect.left - partRectangle.left * svgRect.width;
-  //  var moveY = elRect.top - partRectangle.top * svgRect.height;
-  //
-  //  console.log('scales=',[scaleX, scaleY])
-  //  var result = [
-  //    1, //scaleX,
-  //    0,
-  //    0,
-  //    1, //scaleY,
-  //    moveX,// * (1 - scaleX),
-  //    moveY// * (1 - scaleY)
-  //  ];
-  //  return result;
-  //}
-
-  function normalizePoint (rectangle, baseRect) {
-    return {
-      left: rectangle.left - baseRect.left,
-      top: rectangle.top - baseRect.top,
-      width: rectangle.width,
-      height: rectangle.height
-    };
-  }
 
   function requestFaceMeta(imageUri) {
     var data = /data:(image\/\w+);base64,(.*)/gmi.exec(imageUri);
