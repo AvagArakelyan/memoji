@@ -1,4 +1,4 @@
-(function (exports, $, Face, Webcam, SVG) {
+(function (exports, $, Face, Webcam, SVG, Canvas) {
 
   $(document).ready(function () {
     Webcam.attach('#my_camera');
@@ -24,8 +24,8 @@
         wk: 1
       },
       mid_female: {
-        hb: 0,
-        hk: 1,
+        hb: 1.7/5,
+        hk: 1.5/5,
         wb: 0,
         wk: 1
       },
@@ -284,6 +284,8 @@
       returnFaceLandmarks: 'true',
       returnFaceAttributes: 'gender,age,headPose,smile,facialHair,glasses'
     };
+
+    // canvas.draw(params.returnFaceLandmarks);
     return $.ajax({
       url: 'https://api.projectoxford.ai/face/v1.0/detect?' + $.param(params),
       beforeSend: function (xhrObj) {
@@ -294,5 +296,6 @@
       data: imageData,
       processData: false
     });
+
   }
-})(this, jQuery, Face, Webcam, SVG);
+})(this, jQuery, Face, Webcam, SVG, Canvas);
