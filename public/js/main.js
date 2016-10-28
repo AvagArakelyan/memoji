@@ -71,7 +71,7 @@
         reader.onload = (function (aImg) {
           return function (e) {
             aImg.src = e.target.result;
-              generateMemoji(data_uri);
+              generateMemoji(aImg.src);
           };
         })(img);
         reader.readAsDataURL(file);
