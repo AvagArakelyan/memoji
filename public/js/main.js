@@ -36,10 +36,10 @@
         wk: 1
       },
       mature_female: {
-        hb: 0,
-        hk: 1,
-        wb: 0,
-        wk: 1
+        hb: 1/3,
+        hk: 4/6,
+        wb: 1/9,
+        wk: 0.8
       }
     };
 
