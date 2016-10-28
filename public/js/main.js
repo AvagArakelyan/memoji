@@ -3,6 +3,7 @@
   $(document).ready(function () {
     Webcam.attach('#my_camera');
     var popup = document.getElementById('popup');
+    var cameraholder = document.getElementById('visible');
 
     var coef = {
       teen_male: {
@@ -48,6 +49,7 @@
         document.getElementById('my_result').innerHTML = '';
         document.getElementById('my_result').innerHTML = '<img src="' + data_uri + '"/>';
         popup.classList.remove('hidden');
+        cameraholder.classList.add('hidden');
 
        generateMemoji(data_uri);
       });
@@ -66,6 +68,7 @@
         document.getElementById('my_result').innerHTML = '';
         document.getElementById('my_result').appendChild(img);
         popup.classList.remove('hidden');
+        cameraholder.classList.add('hidden');
 
         var reader = new FileReader();
         reader.onload = (function (aImg) {
@@ -80,7 +83,9 @@
 
     $('.close').on('click', function () {
       $('#popup').addClass('hidden');
+      $('#visible').removeClass('hidden');
       $('#my_result').html('');
+      $('#smiley-container').html('');
     });
 
       function generateMemoji(data_uri){
@@ -88,7 +93,7 @@
               .then(function (data) {
                   $('#smiley-container').empty();
                   var test_w = 370;
-                  var test_h = 370;
+                  var test_h = 320;
 
                   var face = data[0];
                   if (!face) {
